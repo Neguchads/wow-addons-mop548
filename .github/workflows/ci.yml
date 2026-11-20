@@ -1,0 +1,24 @@
+name: WoW Lua syntax
+on:
+  pull_request:
+    paths:
+      - 'addons/**/*.lua'
+      - '.github/workflows/ci.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'addons/**/*.lua'
+      - '.github/workflows/ci.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  lua-syntax:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - name: Install Lua 5.1 compiler
+        run: sudo apt-get update && sudo apt-get install -y lua5.1
+      - name: Parse addon Lua files
+        run: find addons -type f -name '*.lua' -print0 | xargs -0 -r -n1 -P4 luac5.1 -p
